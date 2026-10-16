@@ -1,0 +1,122 @@
+/* ===== Tokens de marca (SAIB Web Tecnologia) ===== */
+:root {
+  /* fundos */
+  --bg-0: #07020d;
+  --bg-1: #12041f;
+  --bg-2: #22083b;
+  /* roxos */
+  --brand: #620989; /* roxo oficial do logo */
+  --violet: #8b2bd9;
+  --neon: #b46cff; /* destaque luminoso: "comprou", dados positivos */
+  --lilac: #dcc2ff;
+  /* pratas / neutros (o selo 40 anos é prata escovada) */
+  --white: #ffffff;
+  --silver-1: #f3f2f8;
+  --silver-2: #c8c6d4;
+  --grey: #9d9b9c; /* cinza oficial do logo */
+  --muted: #7a7090;
+  --dim: #3a2f4c; /* inativo: "não comprou" */
+  /* acento quente — usar com parcimônia (alertas, "não comprou", lista de trabalho) */
+  --amber: #ffb547;
+  --amber-deep: #ff8a3d;
+
+  --glass: rgba(255, 255, 255, 0.055);
+  --glass-strong: rgba(255, 255, 255, 0.09);
+  --hairline: rgba(255, 255, 255, 0.12);
+
+  --font-display: "Exo 2", "Inter", sans-serif;
+  --font-text: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* área segura do Reels (conteúdo importante dentro disto) */
+  --safe-top: 250px;
+  --safe-bottom: 1480px;
+  --safe-left: 80px;
+  --safe-right: 960px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg-0);
+}
+body {
+  font-family: var(--font-text);
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+#stage {
+  position: relative;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--bg-0);
+  isolation: isolate;
+}
+.layer,
+.act {
+  position: absolute;
+  inset: 0;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+}
+.act {
+  will-change: clip-path;
+}
+#acts {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+}
+
+/* utilitários tipográficos comuns */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  line-height: 1.02;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--lilac);
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+.grad-silver {
+  background: linear-gradient(180deg, #ffffff 0%, #e4e2ee 45%, #a9a6b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.grad-neon {
+  background: linear-gradient(180deg, #f1e4ff 0%, #c48bff 50%, #9a45f0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* guias de área segura (?safe=1) */
+.show-safe #stage::after {
+  content: "";
+  position: absolute;
+  z-index: 9999;
+  left: var(--safe-left);
+  top: var(--safe-top);
+  width: calc(var(--safe-right) - var(--safe-left));
+  height: calc(var(--safe-bottom) - var(--safe-top));
+  outline: 3px dashed rgba(0, 255, 160, 0.8);
+  pointer-events: none;
+}
