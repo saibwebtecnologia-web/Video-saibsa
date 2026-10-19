@@ -40,7 +40,7 @@
           top: "-108px",
           width: "1296px",
           height: "2136px",
-          backgroundImage: "radial-gradient(circle, rgba(220,194,255,0.16) 1.4px, transparent 2px)",
+          backgroundImage: "radial-gradient(circle, rgba(230,210,255,0.2) 1.4px, transparent 2px)",
           backgroundSize: "54px 54px",
           willChange: "transform",
         },
@@ -50,7 +50,7 @@
       root.append(
         h("div", {
           class: "layer",
-          style: { background: "radial-gradient(90% 70% at 50% 48%, transparent 40%, rgba(0,0,0,0.62) 100%)" },
+          style: { background: "radial-gradient(90% 70% at 50% 48%, transparent 45%, rgba(8,0,20,0.38) 100%)" },
         })
       );
       stage.append(root);
@@ -59,18 +59,18 @@
       const e = clamp(SAIB.bg.energy ?? 1, 0, 2);
       const c = els.ctx;
       const g0 = c.createRadialGradient(CW / 2, 0, 0, CW / 2, 0, CH * 1.05);
-      g0.addColorStop(0, "#2a0b49");
-      g0.addColorStop(0.45, "#14051f");
-      g0.addColorStop(1, "#07020d");
+      g0.addColorStop(0, "#4a1784");
+      g0.addColorStop(0.45, "#2c0c55");
+      g0.addColorStop(1, "#160530");
       c.globalCompositeOperation = "source-over";
       c.fillStyle = g0;
       c.fillRect(0, 0, CW, CH);
       const orbs = [
         // cx, cy, ampX, ampY, freq, raio, cor
-        [540, 520, 380, 260, 0.05, 750, [139, 43, 217, 0.5]],
-        [300, 1350, 340, 300, 0.04, 850, [98, 9, 137, 0.65]],
-        [820, 1000, 300, 380, 0.06, 550, [180, 108, 255, 0.22]],
-        [560, 1700, 420, 200, 0.035, 700, [60, 20, 160, 0.35]],
+        [540, 520, 380, 260, 0.05, 780, [150, 60, 230, 0.62]],
+        [300, 1350, 340, 300, 0.04, 880, [120, 24, 170, 0.75]],
+        [820, 1000, 300, 380, 0.06, 600, [190, 125, 255, 0.34]],
+        [560, 1700, 420, 200, 0.035, 740, [80, 36, 190, 0.45]],
       ];
       c.globalCompositeOperation = "screen";
       orbs.forEach(([cx, cy, ax, ay, f, r, col], i) => {

@@ -13,7 +13,7 @@
  *   3.95–5.35  scan local varre a grade: 7 acendem (neon), 3 viram fantasma (âmbar); contador 0→7
  *   4.75–5.23  pergunta sai para cima; 4.85 rótulo "compraram este mês"
  *   5.40       BATIDA: "7" dá pop de mola + bloom, grade pulsa, anéis âmbar nos 3 fantasmas,
- *              leitura do HUD pisca; leitura lateral "Comprou 07 / Não comprou 03"
+ *              leitura do HUD pisca; legenda com os selos dos tiles: "✓ 7 compraram / – 3 não compraram"
  *   5.55–5.95  "Faturamento bom pode esconder uma carteira encolhendo." por palavra
  *   6.00–7.30  mini gráfico em tesoura: faturamento ↑ (prata) × clientes comprando ↓ (âmbar)
  *   6.50–7.90  "encolhendo." encolhe (espaçamento + escala uniforme)
@@ -111,7 +111,6 @@
 
   const kick = (dt, f = 15, k = 6.5) => (dt <= 0 ? 0 : Math.exp(-dt * k) * Math.sin(dt * f));
   const typeOn = (str, t, at, cps = 38) => str.slice(0, Math.max(0, Math.floor((t - at) * cps)));
-  const pad2 = (n) => String(n).padStart(2, "0");
   const addSt = (a, b) => ({ x: a.x + b.x, y: a.y + b.y, opacity: a.opacity * b.opacity, blur: a.blur + b.blur, scale: a.scale * b.scale });
 
   const CSS = `
@@ -186,10 +185,12 @@
   [data-act="A"] .de .ch{display:inline-block}
   [data-act="A"] .de .ten{display:inline-block;line-height:1.02;visibility:hidden;letter-spacing:-0.015em}
   [data-act="A"] .lbl{margin-top:18px;font-family:var(--font-text);font-weight:600;font-size:38px;color:var(--lilac);letter-spacing:.005em;white-space:nowrap}
-  [data-act="A"] .stack{right:${1080 - (BR.x + BR.w)}px;top:384px;display:flex;flex-direction:column;align-items:flex-end;gap:12px;color:var(--silver-2)}
-  [data-act="A"] .stack .row{display:flex;align-items:center;gap:14px}
-  [data-act="A"] .stack .v{color:#f1e4ff;font-weight:600}
-  [data-act="A"] .stack .sw{width:12px;height:12px;border-radius:50%}
+  [data-act="A"] .stack{right:${1080 - (BR.x + BR.w)}px;top:364px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+  [data-act="A"] .stack .row{display:flex;align-items:center;gap:12px;font-family:var(--font-text);font-weight:600;font-size:32px;line-height:38px;white-space:nowrap;letter-spacing:.005em}
+  [data-act="A"] .stack .row svg{width:34px;height:34px;flex:none;overflow:visible}
+  [data-act="A"] .stack .v{font-weight:800}
+  [data-act="A"] .stack .r1{color:#f1e4ff}
+  [data-act="A"] .stack .r2{color:#ffc36b}
   [data-act="A"] .ph{left:${GX}px;top:1072px;font-family:var(--font-display);font-weight:800;font-size:70px;line-height:1.04;letter-spacing:-0.012em}
   [data-act="A"] .amb{background:linear-gradient(180deg,#ffe2b0 0%,#ffb547 55%,#ff8a3d 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
   [data-act="A"] .chart{left:${GX}px;top:1318px;width:${GW}px;height:160px}
@@ -388,18 +389,17 @@
       S.ctr.append(S.num, S.side);
       S.Ltext.append(S.ctr);
 
-      // ---- leitura lateral do resultado (HUD, equilibra o lado direito do contador)
-      S.stack = h("div", { class: "abs mono stack" }, [
-        h("div", { class: "row" }, [
-          h("span", { class: "sw", style: { background: "#b46cff", boxShadow: "0 0 10px 2px rgba(180,108,255,.85)" } }),
-          h("span", { text: "Comprou" }),
-          h("span", { class: "v", text: "07" }),
-        ]),
-        h("div", { class: "row" }, [
-          h("span", { class: "sw", style: { border: "2px solid #ffb547" } }),
-          h("span", { text: "Não comprou" }),
-          h("span", { class: "v", text: "03" }),
-        ]),
+      // ---- legenda do resultado: usa os mesmos selos dos tiles (✓ comprou · – não comprou)
+      const BADGE_OK = `<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="#b46cff"/><circle cx="22" cy="22" r="18" fill="none" stroke="#f1e4ff" stroke-width="1.5" opacity=".7"/><path d="M14.5 22.5l5 5 10-11" stroke="#fff" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      const BADGE_NO = `<svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="17" fill="#1a0b26" stroke="#ffb547" stroke-width="2.5"/><path d="M15 22H29" stroke="#ffb547" stroke-width="3" stroke-linecap="round"/></svg>`;
+      const legRow = (cls, badge, n, txt) => {
+        const r = h("div", { class: `row ${cls}` });
+        r.innerHTML = `${badge}<span><span class="v">${n}</span> ${txt}</span>`;
+        return r;
+      };
+      S.stack = h("div", { class: "abs stack" }, [
+        legRow("r1", BADGE_OK, "7", "compraram"),
+        legRow("r2", BADGE_NO, "3", "não compraram"),
       ]);
       S.stackRows = [...S.stack.children];
       S.Ltext.append(S.stack);
@@ -541,8 +541,7 @@
         else set(p, { x: BR.x + BR.w - L0 - u * span, y: BR.y + BR.h - 5, sx: -1, sy: 1, opacity: op });
       });
       // leituras
-      const nIn = S.tiles.filter((x) => t >= x.at + 0.3).length;
-      const lFull = `Carteira · ${pad2(nIn)} PDVs`;
+      const lFull = "Carteira · 10 PDVs"; // dado real do quadro (sem contagem decorativa)
       const lTyped = typeOn(lFull, t, -0.95, 40);
       S.hudLt.textContent = lTyped.slice(0, lFull.length - 1);
       S.hudLs.textContent = lTyped.length >= lFull.length ? "s" : "";
