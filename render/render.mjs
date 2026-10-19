@@ -11,7 +11,8 @@ import { spawn, execFileSync } from "node:child_process";
 import { serve, openPage, parseArgs, manifest, ROOT } from "./lib.mjs";
 
 const a = parseArgs(process.argv.slice(2));
-const m = manifest();
+const dir = a.dir || "src";
+const m = manifest(dir);
 const fps = Number(a.fps || m.fps);
 const from = Number(a.from || 0);
 const to = Number(a.to || m.duration);
@@ -32,7 +33,7 @@ const t0 = Date.now();
 let done = 0;
 
 async function renderChunk(w, i0, i1) {
-  const P = await openPage({ port, scale, only: a.only || null });
+  const P = await openPage({ port, scale, only: a.only || null, dir });
   const seg = path.join(tmp, `seg${String(w).padStart(2, "0")}.mp4`);
   // sub-quadros entram a fps*mb e o tmix faz a média -> motion blur de obturador `shutter`
   const vf = [];

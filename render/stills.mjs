@@ -12,7 +12,8 @@ import { execFileSync } from "node:child_process";
 import { serve, openPage, parseArgs, manifest, ROOT } from "./lib.mjs";
 
 const a = parseArgs(process.argv.slice(2));
-const m = manifest();
+const dir = a.dir || "src";
+const m = manifest(dir);
 let times = [];
 let label = "stills";
 const act = a.act ? m.acts.find((x) => x.id === a.act) : null;
@@ -33,7 +34,7 @@ const out = path.resolve(ROOT, a.out || `out/stills/${label}`);
 fs.mkdirSync(out, { recursive: true });
 const scale = Number(a.scale || (a.sheet ? 0.5 : 1));
 const { srv, port } = await serve();
-const P = await openPage({ port, scale, only: a.only || null, safe: !!a.safe });
+const P = await openPage({ port, scale, only: a.only || null, dir, safe: !!a.safe });
 const files = [];
 const tStart = Date.now();
 for (const t of times) {

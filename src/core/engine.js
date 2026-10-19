@@ -109,7 +109,13 @@
       const yOut = last ? null : SAIB.scanY(T, a.end);
       if (yIn !== null) clip = `inset(0 0 ${Math.max(0, m.height - yIn).toFixed(1)}px 0)`;
       else if (yOut !== null) clip = `inset(${Math.max(0, yOut).toFixed(1)}px 0 0 0)`;
-      a.root.style.clipPath = clip;
+      if (m.transitionMode === "dissolve") {
+        // fusão: o ato que entra sobe de 0 a 1 por cima do que sai (mesma pose nos dois = emenda invisível)
+        let op = 1;
+        if (!first && T < a.start + tw) op = ease.inOutSine(prog(T, a.start - tw, a.start + tw));
+        a.root.style.opacity = op.toFixed(4);
+        a.root.style.zIndex = String(i);
+      } else a.root.style.clipPath = clip;
       if (a.def && a.def.update) {
         try {
           a.def.update(T - a.start, a.ctx);

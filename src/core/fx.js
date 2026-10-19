@@ -38,6 +38,7 @@
       p === 0 ? 0 : p === 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1,
     // "expo suave" — curva de assinatura do vídeo (entradas)
     signature: (p) => 1 - Math.pow(1 - p, 4.2),
+    inOutSine: (p) => -(Math.cos(Math.PI * p) - 1) / 2,
   };
 
   // Mola analítica (sub-amortecida). t em segundos desde o disparo; retorna ~0 -> 1 com overshoot.

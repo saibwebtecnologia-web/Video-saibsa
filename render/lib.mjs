@@ -46,7 +46,7 @@ export function serve() {
   });
 }
 
-export async function openPage({ port, scale = 1, only = null, safe = false }) {
+export async function openPage({ port, scale = 1, only = null, safe = false, dir = "src", query = {} }) {
   const { chromium } = loadPlaywright();
   const browser = await chromium.launch({
     args: ["--disable-gpu-vsync", "--disable-frame-rate-limit", "--font-render-hinting=none", "--force-color-profile=srgb"],
@@ -59,7 +59,8 @@ export async function openPage({ port, scale = 1, only = null, safe = false }) {
   const q = new URLSearchParams();
   if (only) q.set("only", only);
   if (safe) q.set("safe", "1");
-  await page.goto(`http://127.0.0.1:${port}/src/index.html?${q}`);
+  for (const [k, v] of Object.entries(query)) q.set(k, String(v));
+  await page.goto(`http://127.0.0.1:${port}/${dir}/index.html?${q}`);
   await page.waitForFunction(() => window.SAIB && window.SAIB.ready === true, null, { timeout: 30000 });
   const seek = async (t) => {
     await page.evaluate((t) => SAIB.seek(t), t);
@@ -91,8 +92,9 @@ export function parseArgs(argv) {
   return a;
 }
 
-export function manifest() {
-  const src = fs.readFileSync(path.join(ROOT, "src/manifest.js"), "utf8");
+// --dir escolhe o projeto de vídeo (pasta com index.html + manifest.js). Padrão: src (Raio-X #1).
+export function manifest(dir = "src") {
+  const src = fs.readFileSync(path.join(ROOT, dir, "manifest.js"), "utf8");
   const win = { SAIB: {} };
   new Function("window", "SAIB", src)(win, win.SAIB);
   return win.SAIB.manifest;
