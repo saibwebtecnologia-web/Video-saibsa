@@ -533,6 +533,19 @@ def make_sfx():
     S(blip(1760, 0.08), E + 3.5, 0.03)  # pulso da pílula
     S(blip(1760, 0.08), E + 4.5, 0.02)
 
+    # ===== elementos de clareza (rodada 2)
+    S(blip(1760, 0.07), 5.45, 0.05, 0.5)  # legenda "7 compraram"
+    S(ghost(0.25), 5.55, 0.08, 0.5)  # legenda "3 não compraram"
+    S(whoosh(0.5, 600, 4000, 0.35), B + 0.35, 0.06)  # definição sob "Positivação"
+    t = tt(0.65)  # contorno âmbar desenhando os 30% que não compraram
+    S(lp(sawtooth(2 * np.pi * np.cumsum(300 * 1.25 ** (t / 0.65)) / SR), 1200) * np.sin(np.pi * t / 0.65) ** 2 * 0.35, B + 7.75, 0.07, 0.3)
+    S(ghost(0.4), B + 7.85, 0.16, 0)  # "30% · 180 não compraram"
+    S(pop(760, 0.13), B + 7.88, 0.10, 0)
+    S(pop(1150, 0.12), D + 1.30, 0.12, 0)  # pílula "= 600 ativos − 420 que compraram"
+    for k in range(6):
+        S(tick(0.02, 3000 + 120 * k), D + 1.35 + k * 0.05, 0.05, -0.1 + 0.04 * k)
+    S(whoosh(0.5, 500, 3500, 0.4), E + 3.05, 0.06)  # frase do SAIB Vendas
+
     s = reverb(s, 1.8, 7000, 0.18)
     return s
 

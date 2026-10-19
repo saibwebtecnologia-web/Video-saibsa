@@ -16,7 +16,8 @@
  *   2.30  dashboard colapsa para o centro do selo · 2.32 título sai por linha (linha 2 primeiro)
  *   2.40  "Fique de olho." sai · o olho viaja (0,66 s) até virar o símbolo do logo
  *   2.60  selo 40 anos nasce de onde o dashboard colapsou · 2.68 CTA (legível ≈3,0→5,4)
- *   2.86  "saib" revela-se a partir do símbolo · 2.94 pílula · 3.08 linha de apoio
+ *   2.86  "saib" revela-se a partir do símbolo · 2.94 pílula · 3.08 linha de apoio ("Com o SAIB Vendas,
+ *         a base dessa conta já está no sistema.", 2 linhas, 35 px)
  *   3.45  brilho no logo · 3.50 pulso da pílula (período 1 s) · 3.62 feixe no selo
  *   4.24–5.40  hold estável: régua do selo girando a 0,6 rpm, 4.70 última passada de luz no olho
  */
@@ -28,7 +29,8 @@
   const EYE = { cx: 300, cy: 220 }; // centro da íris no recorte do símbolo (625 × 440, topo em y=100 do logo)
   const EYE_E1 = { x: 540, y: 1020, k: 1.5 }; // posição/escala do olho em E1 (tela)
   const CARD = { x: 120, y: 770, w: 840, h: 500 };
-  const SELO = { w: 360, x: 540 - 180, y: 690 };
+  const SELO = { w: 336, x: 540 - 168, y: 690 }; // 336 (era 360): abre espaço para a linha de apoio em 2 linhas
+  const SELO_K = SELO.w / 360; // escala dos anéis decorativos desenhados para o selo de 360
 
   // Orçamento de leitura (regra 1,2 s + 0,05 s/caractere): título legível ≈0,10→2,40 · "Fique de olho."
   // ≈0,76→2,46 · CTA ≈2,95→5,40 (o ato tem só 5,4 s; as frases se sobrepõem em vez de se suceder).
@@ -99,17 +101,22 @@
   [data-act="E"] .cta1 { font-family:var(--font-display); font-weight:700; font-size:64px; line-height:1.08; letter-spacing:-0.005em; }
   [data-act="E"] .cta2 { font-family:var(--font-display); font-weight:900; font-style:italic; font-size:112px; line-height:1.0; letter-spacing:-0.01em; }
   [data-act="E"] .cta2 .w { padding:0 0.06em 0.04em; }
+  /* "gratuita": base do gradiente neon mais clara (a cor original some no fundo roxo no celular) */
+  [data-act="E"] .cta2 .grad-neon { background-image:linear-gradient(180deg, #fbf6ff 0%, #dcb9ff 50%, #b77cff 100%); }
+  [data-act="E"] .cta2.glow-neon { filter: drop-shadow(0 4px 10px rgba(16,0,34,.45)) drop-shadow(0 0 22px rgba(180,108,255,.5)); }
   [data-act="E"] .pill { position:relative; display:inline-flex; align-items:center; gap:16px; height:88px; padding:0 48px 0 40px; border-radius:999px;
       background:linear-gradient(100deg, #7a1fc9 0%, #9d4cf0 55%, #c08cff 100%);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -2px 0 rgba(0,0,0,.18), 0 14px 40px rgba(139,43,217,.55), 0 0 60px rgba(180,108,255,.35);
       font-family:var(--font-text); font-weight:700; font-size:40px; color:#fff; letter-spacing:.005em; overflow:hidden; }
+  [data-act="E"] .pill > span:not(.shine), [data-act="E"] .pill > svg { position:relative; }
   [data-act="E"] .pill .shine { position:absolute; top:0; bottom:0; width:120px; left:0;
       background:linear-gradient(100deg, rgba(255,255,255,0), rgba(255,255,255,.55), rgba(255,255,255,0)); }
   [data-act="E"] .ring { position:absolute; border-radius:999px; border:2px solid rgba(220,194,255,.9); }
-  [data-act="E"] .support { display:inline-block; font-family:var(--font-text); font-weight:500; font-size:31px; letter-spacing:.01em; color:var(--silver-2); white-space:nowrap; }
+  [data-act="E"] .support { display:inline-block; font-family:var(--font-text); font-weight:500; font-size:35px; line-height:1.24; letter-spacing:.005em; color:var(--silver-1); text-align:center; }
+  [data-act="E"] .support > div { white-space:nowrap; }
   [data-act="E"] .support b { font-weight:700; color:#fff; }
-  [data-act="E"] .support .sep { color:var(--neon); padding:0 .45em; text-shadow:0 0 12px rgba(180,108,255,.9); }
-  [data-act="E"] .hair { height:2px; width:70px; }
+  [data-act="E"] .support .hl { font-weight:700; color:var(--lilac); text-shadow:0 0 14px rgba(180,108,255,.55); }
+  [data-act="E"] .hair { height:2px; width:52px; flex:none; }
   `;
 
   // ---------- helpers ----------
@@ -516,23 +523,25 @@
       const c2 = words("gratuita", { _: "grad-neon" });
       S.cta1Words = c1.ws;
       S.cta2Word = c2.ws[0];
-      S.cta1 = div({ position: "absolute", top: "1082px" }, "center-x cta1", c1.frag);
-      S.cta2 = div({ position: "absolute", top: "1150px" }, "center-x cta2 glow-neon", c2.frag);
+      S.cta1 = div({ position: "absolute", top: "1046px" }, "center-x cta1", c1.frag);
+      S.cta2 = div({ position: "absolute", top: "1112px" }, "center-x cta2 glow-neon", c2.frag);
       root.append(S.cta1, S.cta2);
 
       // ---------- pílula ----------
       S.pillShine = h("span", { class: "shine" });
-      S.pill = h("div", { class: "pill" }, [linkIcon(), h("span", { text: "link na bio" }), S.pillShine]);
+      // brilho passa POR BAIXO do texto (o "link na bio" nunca fica lavado)
+      S.pill = h("div", { class: "pill" }, [S.pillShine, linkIcon(), h("span", { text: "link na bio" })]);
       // o anel de pulso mora dentro da linha da pílula: herda a mola, a escala e o desfoque dela
       S.ring1 = h("div", { class: "ring", style: { left: 0, top: 0, opacity: 0 } });
-      S.pillRow = div({ position: "absolute", top: "1316px", height: "88px" }, "center-x", [S.ring1, S.pill]);
+      S.pillRow = div({ position: "absolute", top: "1264px", height: "88px" }, "center-x", [S.ring1, S.pill]);
       root.append(S.pillRow);
 
       // ---------- linha de apoio ----------
       S.hairL = h("span", { class: "hair", style: { background: "linear-gradient(90deg, rgba(220,194,255,0), rgba(220,194,255,.6))" } });
       S.hairR = h("span", { class: "hair", style: { background: "linear-gradient(90deg, rgba(220,194,255,.6), rgba(220,194,255,0))" } });
-      S.supText = h("span", { class: "support", html: '<b>SAIB Vendas + BI</b><span class="sep">·</span>Gestão que dá lucro' });
-      S.support = div({ position: "absolute", top: "1440px", display: "flex", alignItems: "center", justifyContent: "center", gap: "20px" }, "center-x", [S.hairL, S.supText, S.hairR]);
+      // conecta o produto à conta do vídeo (ativos, quem comprou, positivação)
+      S.supText = h("span", { class: "support", html: '<div>Com o <b>SAIB Vendas</b>, a base dessa conta</div><div><span class="hl">já está no sistema.</span></div>' });
+      S.support = div({ position: "absolute", top: "1384px", display: "flex", alignItems: "center", justifyContent: "center", gap: "20px" }, "center-x", [S.supText]); // sem filetes laterais: com 2 linhas eles cortavam o bloco ao meio
       root.append(S.support);
     },
 
@@ -780,7 +789,9 @@
           const x = m.x + noise(t * 0.35 + m.ph, i) * 30;
           const y = m.y + noise(t * 0.3 + m.ph, i + 50) * 30 - (t - 3) * 10 * m.s;
           const tw2 = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * (1.2 + m.d) + m.ph));
-          set(m.el, { x, y, scale: m.s, opacity: on * tw2 * 0.55 });
+          // zona do CTA (texto + pílula + apoio, y ≳ 1010): partícula some antes de chegar lá
+          const keep = 1 - clamp((y - 960) / 50);
+          set(m.el, { x, y, scale: m.s, opacity: on * tw2 * 0.55 * keep });
         });
       }
 
@@ -800,9 +811,9 @@
         set(S.seloGlow, { opacity: vis * (0.8 + 0.2 * Math.sin(t * 1.8)), scale: lerp(0.7, 1, tw(t, T.selo, 1)) });
         // anel de luz que se expande ao chegar (rastro)
         const rp = prog(t, T.selo + 0.12, T.selo + 1.0);
-        set(S.ringFx, { scale: lerp(0.8, 1.45, ease.outCubic(rp)), opacity: rp > 0 && rp < 1 ? (1 - rp) * 0.8 : 0 });
+        set(S.ringFx, { scale: SELO_K * lerp(0.8, 1.3, ease.outCubic(rp)), opacity: rp > 0 && rp < 1 ? (1 - rp) * 0.8 : 0 });
         // régua finíssima girando a 0,6 rpm
-        set(S.seloHair, { rot: t * 3.6, opacity: 0.18 * tw(t, T.selo + 0.5, 0.8) });
+        set(S.seloHair, { rot: t * 3.6, scale: SELO_K, opacity: 0.18 * tw(t, T.selo + 0.5, 0.8) });
         // feixe de brilho
         const shp = prog(t, T.sheen, T.sheen + 0.62);
         S.seloSheen.style.backgroundPosition = `${lerp(100, 0, ease.inOutCubic(shp)).toFixed(2)}% 0`;

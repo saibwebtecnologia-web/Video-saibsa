@@ -185,9 +185,9 @@
   [data-act="A"] .de .ch{display:inline-block}
   [data-act="A"] .de .ten{display:inline-block;line-height:1.02;visibility:hidden;letter-spacing:-0.015em}
   [data-act="A"] .lbl{margin-top:18px;font-family:var(--font-text);font-weight:600;font-size:38px;color:var(--lilac);letter-spacing:.005em;white-space:nowrap}
-  [data-act="A"] .stack{right:${1080 - (BR.x + BR.w)}px;top:364px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
-  [data-act="A"] .stack .row{display:flex;align-items:center;gap:12px;font-family:var(--font-text);font-weight:600;font-size:32px;line-height:38px;white-space:nowrap;letter-spacing:.005em}
-  [data-act="A"] .stack .row svg{width:34px;height:34px;flex:none;overflow:visible}
+  [data-act="A"] .stack{right:${1080 - (BR.x + BR.w)}px;top:374px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+  [data-act="A"] .stack .row{display:flex;align-items:center;gap:11px;font-family:var(--font-text);font-weight:600;font-size:30px;line-height:36px;white-space:nowrap;letter-spacing:.005em}
+  [data-act="A"] .stack .row svg{width:31px;height:31px;flex:none;overflow:visible}
   [data-act="A"] .stack .v{font-weight:800}
   [data-act="A"] .stack .r1{color:#f1e4ff}
   [data-act="A"] .stack .r2{color:#ffc36b}

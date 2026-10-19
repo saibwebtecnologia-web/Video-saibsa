@@ -11,6 +11,7 @@
  *  -0.16  cartão de vidro ("app") sobe · 0.00 cabeçalho "LISTA DE TRABALHO · ESTE MÊS"
  *   0.15  "clientes para ligar, visitar / e entender o motivo" por palavra (35 ms)
  *   0.35–1.25  contador 0→180 (outCubic; último dígito rola como slot) → pop de mola exatamente no 180
+ *   1.35  origem do 180 por palavra: "= 600 ativos − 420 que compraram" (liga com a conta do ato B)
  *   0.40  2 linhas da lista entram · 0.55 prazo "antes do fim do mês" + trilha 1–30
  *   1.05  "HOJE · 18" / "DIA 30" entram com o preenchimento âmbar 18→30 (1.15–1.95)
  *   1.30  linha fantasma "+ 178 clientes" (eco do 180)
@@ -32,17 +33,18 @@
 (function () {
   const W = 1080;
   const CX = 540;
-  const CARD = { x: 130, w: 820, y: 650, h1: 820 }; // h2 medido
+  const CARD = { x: 130, w: 820, y: 638, h1: 842 }; // h2 medido
   const PAD = 40;
   const HEAD_H = 68;
   const ROW_H = 86;
-  const WIN = { left: 32, top: 420, w: 756, h: 2 * ROW_H + 8 }; // janela da lista (coordenadas do cartão)
+  const WIN = { left: 32, top: 448, w: 756, h: 2 * ROW_H + 8 }; // janela da lista (coordenadas do cartão)
   const GHOST_T = WIN.top + WIN.h; // linha fantasma "+ 178 clientes"
-  const NUM = { top: 74, h: 200, fs: 236 };
-  const LABEL_T = 304;
-  const DL_T = 668;
-  const BAR = { x0: PAD + 4, x1: 820 - PAD - 11, y: 748 };
-  const BL_T = 766;
+  const NUM = { top: 72, h: 184, fs: 212 };
+  const ORG_T = 286; // origem do 180: "= 600 ativos − 420 que compraram"
+  const LABEL_T = 346;
+  const DL_T = 694;
+  const BAR = { x0: PAD + 4, x1: 820 - PAD - 11, y: 774 };
+  const BL_T = 792;
   const STEPS_T = HEAD_H + 20; // topo da lista de passos no cartão
   const COS_T = 16; // topo do "figurino de linha de lista" dentro do passo (centro do avatar = centro do disco)
   const dayX = (d) => BAR.x0 + ((d - 1) / 29) * (BAR.x1 - BAR.x0);
@@ -57,6 +59,7 @@
     num: 0.12,
     count: 0.35,
     countEnd: 1.25,
+    origin: 1.35,
     label: 0.15,
     list: 0.4,
     dead: 0.55,
@@ -158,7 +161,7 @@
 [data-act="D"] .d-layer { left:${CARD.x}px; width:${CARD.w}px; top:${CARD.y}px; height:0; }
 
 [data-act="D"] .d-head { left:0; width:${CARD.w}px; top:0; height:${HEAD_H}px; padding:0 ${PAD}px; display:flex; align-items:center; justify-content:space-between;
-  font-family:var(--font-mono); font-weight:600; font-size:26px; letter-spacing:0.2em; color:rgba(220,194,255,0.82); white-space:nowrap; }
+  font-family:var(--font-mono); font-weight:600; font-size:28px; letter-spacing:0.2em; color:rgba(220,194,255,0.86); white-space:nowrap; }
 [data-act="D"] .d-head .l { display:flex; align-items:center; gap:14px; }
 [data-act="D"] .d-head .ic { position:relative; width:30px; height:30px; color:var(--lilac); }
 [data-act="D"] .d-head .ic svg { position:absolute; inset:0; width:30px; height:30px; }
@@ -166,7 +169,7 @@
 [data-act="D"] .d-head .r i { width:9px; height:9px; border-radius:50%; background:var(--lilac); box-shadow:0 0 10px 2px rgba(180,108,255,0.7); }
 [data-act="D"] .d-head .r .cs { display:flex; }
 [data-act="D"] .d-head .r .cs span { display:inline-block; white-space:pre; }
-[data-act="D"] .d-head .r .cs span.nn { color:var(--neon); text-shadow:0 0 12px rgba(180,108,255,0.85); }
+[data-act="D"] .d-head .r .cs span.nn { color:#d4aeff; text-shadow:0 0 12px rgba(180,108,255,0.85); }
 [data-act="D"] .d-head .r .cs span.hi { color:#ece0ff; }
 [data-act="D"] .d-hair { left:${PAD}px; width:${CARD.w - 2 * PAD}px; top:${HEAD_H}px; height:1.5px; background:rgba(255,255,255,0.12); }
 
@@ -179,9 +182,18 @@
 [data-act="D"] .d-brk { left:0; top:0; width:${CARD.w}px; height:400px; overflow:visible; }
 
 [data-act="D"] .d-label { left:0; width:${CARD.w}px; top:${LABEL_T}px; text-align:center; font-family:var(--font-text); font-weight:500;
-  font-size:44px; line-height:1.12; color:var(--silver-2); letter-spacing:-0.005em; }
+  font-size:44px; line-height:1.08; color:var(--silver-2); letter-spacing:-0.005em; }
 [data-act="D"] .d-label .w { display:inline-block; white-space:nowrap; }
 [data-act="D"] .d-label .k { color:#ffffff; font-weight:750; }
+
+[data-act="D"] .d-orgw { left:0; width:${CARD.w}px; top:${ORG_T}px; height:46px; display:flex; justify-content:center; }
+[data-act="D"] .d-org { position:relative; height:46px; padding:0 26px; display:flex; align-items:baseline; gap:11px; border-radius:23px;
+  background:rgba(139,43,217,0.16); border:1.5px solid rgba(220,194,255,0.24); box-shadow:inset 0 1px 0 rgba(255,255,255,0.07);
+  font-family:var(--font-text); font-weight:500; font-size:34px; line-height:43px; color:var(--silver-2); white-space:nowrap; letter-spacing:-0.005em; }
+[data-act="D"] .d-org .w { display:inline-block; }
+[data-act="D"] .d-org .op { font-weight:600; color:var(--lilac); }
+[data-act="D"] .d-org .n { color:#ffffff; font-weight:750; font-variant-numeric:tabular-nums; }
+[data-act="D"] .d-org .n.ne { color:#d9b8ff; text-shadow:0 0 14px rgba(180,108,255,0.75); }
 
 [data-act="D"] .d-winbg { left:${WIN.left}px; width:${WIN.w}px; top:${WIN.top}px; height:${WIN.h + 52}px; border-radius:24px;
   background:linear-gradient(180deg, rgba(8,2,18,0.34), rgba(8,2,18,0.12)); box-shadow:inset 0 1px 0 rgba(255,255,255,0.06); }
@@ -202,9 +214,9 @@
   border:3px solid #1a0b29; }
 [data-act="D"] .d-lr .nm { position:absolute; left:102px; top:8px; font-family:var(--font-text); font-weight:600; font-size:34px;
   color:#f3f2f8; white-space:nowrap; letter-spacing:-0.005em; }
-[data-act="D"] .d-lr .tag { position:absolute; left:102px; top:50px; font-family:var(--font-mono); font-weight:600; font-size:26px; letter-spacing:0.14em;
+[data-act="D"] .d-lr .tag { position:absolute; left:102px; top:49px; font-family:var(--font-mono); font-weight:600; font-size:28px; letter-spacing:0.14em;
   color:rgba(200,198,212,0.78); padding:0 10px 0 12px; border-radius:7px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.03);
-  line-height:28px; white-space:nowrap; }
+  line-height:30px; white-space:nowrap; }
 [data-act="D"] .d-lr .bt { position:absolute; top:15px; width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center;
   border:1.5px solid rgba(220,194,255,0.26); background:rgba(139,43,217,0.12); color:var(--lilac); }
 [data-act="D"] .d-lr .bt svg { width:26px; height:26px; }
@@ -227,7 +239,7 @@
   font-family:var(--font-text); font-weight:600; font-size:44px; color:#ffffff; white-space:nowrap; }
 [data-act="D"] .d-dl svg { width:42px; height:42px; color:var(--lilac); }
 [data-act="D"] svg.d-bar { left:0; top:0; width:${CARD.w}px; height:840px; overflow:visible; }
-[data-act="D"] .d-bl { top:${BL_T}px; font-family:var(--font-mono); font-weight:600; font-size:27px; letter-spacing:0.14em; white-space:nowrap; line-height:32px; }
+[data-act="D"] .d-bl { top:${BL_T}px; font-family:var(--font-mono); font-weight:600; font-size:30px; letter-spacing:0.14em; white-space:nowrap; line-height:34px; }
 
 [data-act="D"] .d-steps { left:0; width:${CARD.w}px; top:${STEPS_T}px; padding:0 ${PAD}px; display:flex; flex-direction:column; }
 [data-act="D"] .d-step { position:relative; display:flex; align-items:flex-start; gap:30px; padding:27px 0 27px 0; }
@@ -420,6 +432,16 @@
         });
         S.label.append(row);
       });
+      // origem do 180 (liga com a conta do ato B): "= 600 ativos − 420 que compraram"
+      S.org = h("div", { class: "d-org" });
+      S.orgW = h("div", { class: "d-abs d-orgw" }, [S.org]);
+      S.orgWords = [
+        ["=", "op"], ["600", "n"], ["ativos"], ["−", "op"], ["420", "n ne"], ["que compraram"],
+      ].map(([wd, k]) => {
+        const w = h("span", { class: "w" + (k ? " " + k : ""), text: wd });
+        S.org.append(w);
+        return w;
+      });
       // lista rolando
       S.winbg = h("div", { class: "d-abs d-winbg" });
       S.win = h("div", { class: "d-abs d-win" });
@@ -470,7 +492,7 @@
       bar.append(bdefs, S.track, S.past, tg, S.fillH, S.fill, S.tipG, S.flag, S.mkRing, S.mk);
       S.blToday = h("div", { class: "d-abs d-bl", html: 'HOJE · <b style="color:#fff">18</b>', style: { color: "var(--lilac)" } });
       S.blEnd = h("div", { class: "d-abs d-bl", text: "DIA 30", style: { color: "#f3eaff" } });
-      L1.append(S.numGlow, S.brkSvg, S.num, S.label, S.winbg, S.win, S.ghost, S.dl, bar, S.blToday, S.blEnd);
+      L1.append(S.numGlow, S.brkSvg, S.num, S.orgW, S.label, S.winbg, S.win, S.ghost, S.dl, bar, S.blToday, S.blEnd);
       L.append(L1);
 
       // =========== D2: checklist (cada passo nasce "vestido" de linha de lista)
@@ -775,6 +797,18 @@
           ];
           S.brk.forEach((p, i) => p.setAttribute("d", ap > 0.001 ? ds[i] : "M0 0"));
           set(S.brkSvg, { y: ex.y, opacity: prog(t, T.num + 0.2, T.num + 0.45) * ex.opacity * (0.7 + 0.3 * Math.sin(t * 2.4)) });
+        }
+        // origem do 180, por palavra (50 ms), logo depois do número pousar; sai junto com o 180
+        {
+          const ex = exitState(t, O + 0.05, { y: -36, blur: 10, dur: 0.3 });
+          const pe = enterState(t, T.origin - 0.05, { y: 24, blur: 6, dur: 0.6, scale: 0.94 });
+          set(S.orgW, { y: ex.y, opacity: ex.opacity, blur: ex.blur });
+          set(S.org, { y: pe.y, opacity: pe.opacity, blur: pe.blur, scale: pe.scale });
+          S.orgWords.forEach((w, i) => {
+            const a = T.origin + i * 0.05;
+            const st = enterState(t, a, { y: 30, blur: 10, dur: 0.7 });
+            set(w, { y: st.y, opacity: st.opacity, blur: st.blur });
+          });
         }
         // rótulo por palavra (35 ms)
         {

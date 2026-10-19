@@ -6,7 +6,7 @@
  *  -0.30  eyebrow "ABRA O NÚMERO" decodifica (o scan do motor já revela em movimento)
  *  -0.25  "Por vendedor" entra por letra (stagger 35 ms) · legível em ~0.6
  *  -0.12  cartões de vidro A/B sobem · conteúdo (avatar, nome, %) já entra sob o scan (-0.02 / 0.08)
- *   0.30  linha ÚNICA da média 70 % desenha de cima a baixo atravessando os dois cartões · "MÉDIA 70%" decodifica
+ *   0.30  linha ÚNICA da média 70 % desenha de cima a baixo atravessando os dois cartões · "MÉDIA GERAL: 70%" decodifica
  *   0.38  barras crescem (A→85 % neon, B→55 % âmbar), percentuais contam
  *   0.55  "A conversa com cada um muda." por palavra · legível em ~1.25, parada até 3.88
  *   0.80  selo "EXEMPLO" carimba
@@ -141,8 +141,8 @@
 [data-act="C"] svg.c-avring { position:absolute; left:20px; top:14px; width:128px; height:128px; overflow:visible; }
 [data-act="C"] .c-name { position:absolute; left:160px; top:34px; font-family:var(--font-text); font-weight:600; font-size:46px;
   color:var(--silver-1); letter-spacing:-0.01em; white-space:nowrap; }
-[data-act="C"] .c-sub { position:absolute; left:162px; top:96px; font-family:var(--font-mono); font-size:28px; letter-spacing:0.2em;
-  color:rgba(220,194,255,0.72); white-space:nowrap; }
+[data-act="C"] .c-sub { position:absolute; left:162px; top:94px; font-family:var(--font-text); font-weight:500; font-size:33px; letter-spacing:0;
+  color:rgba(226,206,255,0.86); white-space:nowrap; }
 [data-act="C"] .c-pct { position:absolute; right:36px; top:16px; height:120px; display:flex; align-items:baseline; justify-content:flex-end;
   font-family:var(--font-display); font-weight:800; line-height:120px; white-space:nowrap; }
 [data-act="C"] .c-pct .n { font-size:108px; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; display:inline-block; min-width:1.2em; text-align:right;
@@ -167,9 +167,10 @@
 [data-act="C"] .c-avgpk { left:${AVG_X - 7}px; top:${AVG_Y[0]}px; width:14px; height:90px; border-radius:7px;
   background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.95) 70%, rgba(255,255,255,0));
   box-shadow:0 0 18px rgba(220,194,255,0.8); }
-[data-act="C"] .c-avglab { left:0; top:${AVG_Y[1] + 8}px; height:36px; font-family:var(--font-mono); font-weight:600; font-size:26px;
-  letter-spacing:0.2em; color:rgba(230,214,255,0.88); white-space:nowrap; line-height:36px; text-shadow:0 0 12px rgba(180,108,255,0.5); }
-[data-act="C"] .c-avglab .fx-c { display:inline-block; width:0.62em; text-align:center; margin-right:0.2em; }
+[data-act="C"] .c-avglab { left:0; top:${AVG_Y[1] + 8}px; height:40px; font-family:var(--font-mono); font-weight:600; font-size:30px;
+  letter-spacing:0.12em; color:rgba(236,224,255,0.94); white-space:nowrap; line-height:40px; text-shadow:0 0 12px rgba(180,108,255,0.5); }
+[data-act="C"] .c-avglab .fx-c { display:inline-block; width:0.62em; text-align:center; margin-right:0.1em; }
+[data-act="C"] .c-avglab .fx-c.hi { color:#ffffff; }
 [data-act="C"] .c-avglab .fx-c.sp { width:0.3em; }
 /* diferença para a média */
 [data-act="C"] .c-gap { position:absolute; left:${BAR.w * 0.55}px; top:0; width:${BAR.w * 0.15}px; height:100%; border-radius:0 ${BAR.h / 2}px ${BAR.h / 2}px 0;
@@ -178,8 +179,8 @@
 [data-act="C"] .c-over { position:absolute; left:${BAR.w * 0.7}px; top:-3px; width:${BAR.w * 0.15}px; height:${BAR.h + 6}px; border-radius:${BAR.h}px;
   background:linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.85) 60%, rgba(236,220,255,0.95));
   box-shadow:0 0 26px 4px rgba(196,139,255,0.85); }
-[data-act="C"] .c-tag { position:absolute; top:${BAR.top + BAR.h + 6}px; height:36px; line-height:36px; font-family:var(--font-mono); font-weight:600;
-  font-size:26px; letter-spacing:0.08em; white-space:nowrap; }
+[data-act="C"] .c-tag { position:absolute; top:${BAR.top + BAR.h + 6}px; height:38px; line-height:38px; font-family:var(--font-mono); font-weight:600;
+  font-size:30px; letter-spacing:0.04em; white-space:nowrap; }
 [data-act="C"] .c-tag.neon { color:#e2c8ff; text-shadow:0 0 14px rgba(180,108,255,0.85); }
 [data-act="C"] .c-tag.amber { color:#ffc067; text-shadow:0 0 14px rgba(255,170,60,0.55); }
 /* barras que se soltam e voam para o CD */
@@ -201,7 +202,7 @@
 
 /* selo */
 [data-act="C"] .c-seal { left:0; top:0; padding:8px 14px 8px 18px; border:2px solid var(--amber); border-radius:9px;
-  font-family:var(--font-mono); font-weight:600; font-size:26px; letter-spacing:0.24em; color:var(--amber);
+  font-family:var(--font-mono); font-weight:600; font-size:30px; letter-spacing:0.22em; color:var(--amber);
   background:rgba(255,181,71,0.07); white-space:nowrap; text-shadow:0 0 12px rgba(255,181,71,0.45); }
 [data-act="C"] .c-seal.silver { border-color:#c8c6d4; color:var(--silver-1); background:rgba(255,255,255,0.05);
   text-shadow:0 0 12px rgba(220,194,255,0.45); }
@@ -236,7 +237,7 @@
 [data-act="C"] .c-lab .rp { font-family:var(--font-display); font-weight:800; font-size:34px; font-variant-numeric:tabular-nums; color:#d2abff;
   display:inline-block; min-width:2.05em; text-align:right; }
 [data-act="C"] .c-lab.amber .rp { color:#ffc067; }
-[data-act="C"] .c-hublab { font-family:var(--font-mono); font-weight:600; font-size:22px; letter-spacing:0.22em; color:rgba(243,233,255,0.85);
+[data-act="C"] .c-hublab { font-family:var(--font-mono); font-weight:600; font-size:30px; letter-spacing:0.16em; color:rgba(243,233,255,0.85);
   white-space:nowrap; }
 [data-act="C"] .c-hud { font-family:var(--font-mono); font-size:22px; letter-spacing:0.24em; color:rgba(220,194,255,0.55); white-space:nowrap; }
 [data-act="C"] svg.c-svg { position:absolute; left:0; top:0; width:${W}px; height:1920px; overflow:visible; }
@@ -479,7 +480,7 @@
         ring.append(ringC);
         const av = h("div", { class: `c-av ${tone}`, text: id });
         const name = h("div", { class: "c-name", text: `Vendedor ${id}` });
-        const sub = h("div", { class: "c-sub", text: "POSITIVAÇÃO" });
+        const sub = h("div", { class: "c-sub", text: "Positivação da carteira" });
         const pn = h("span", { class: "n", text: "0" });
         const pctEl = h("div", { class: `c-pct ${tone}` }, [pn, h("span", { class: "p", text: "%" })]);
         const fill = h("div", { class: `c-fill ${tone}` });
@@ -501,12 +502,14 @@
       S.avgPk = h("div", { class: "c-abs c-avgpk" });
       S.avgLab = h("div", { class: "c-abs c-avglab" });
       S.avgChars = [];
-      for (const ch of "MÉDIA 70%") {
-        const c = h("span", { class: "fx-c" + (ch === " " ? " sp" : ""), text: ch === " " ? "\u00a0" : ch });
+      const AVG_TXT = "MÉDIA GERAL: 70%";
+      [...AVG_TXT].forEach((ch, i) => {
+        const hi = i >= AVG_TXT.length - 3;
+        const c = h("span", { class: "fx-c" + (ch === " " ? " sp" : "") + (hi ? " hi" : ""), text: ch === " " ? "\u00a0" : ch });
         c.dataset.ch = ch;
         S.avgLab.append(c);
         S.avgChars.push(c);
-      }
+      });
       world.append(S.avg, S.avgPk, S.avgLab);
 
       // ---- barras que se soltam (transição para o mapa)
@@ -732,7 +735,7 @@
             const real = c.dataset.ch;
             if (real === " ") return;
             const show = T.avg + 0.25 + i * 0.03;
-            const res = T.avg + 0.42 + i * 0.05;
+            const res = T.avg + 0.42 + i * 0.035;
             let ch = real;
             if (t < res) ch = G[Math.floor(SAIB.fx.hash(Math.floor(t * 24) * 31 + i * 7) * G.length)];
             if (c.textContent !== ch) c.textContent = ch;

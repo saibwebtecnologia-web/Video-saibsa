@@ -6,6 +6,8 @@
  *         surgem como "esqueleto" (o scan do motor revela a fórmula se montando)
  *  -0.25  "Positivação =" entra por letra (o "=" é glifo lilás na linha do título)
  *   0.15  numerador (vidro + palavras, "compraram" em neon)
+ *   0.35  definição simples sob o título: "a % da sua carteira que comprou de você" (por palavra;
+ *         sai junto com o título no colapso, C − 0.2)
  *   0.35  barra da fração desenha-se do centro para fora com cabeças de luz
  *   0.55  denominador ("ativos" em branco)
  *   1.00  pontos do "÷" saltam (mola): a barra É o sinal de divisão
@@ -20,6 +22,7 @@
  *         do título desce para baixo da linha, apontando para o resultado
  *   6.75  a barra CURVA-SE e fecha num anel ainda luminoso (depois esfria para a trilha)
  *   6.95  "70%" entra · 7.00 arco neon 0→70% · 7.15 régua · 7.45 "de positivação"
+ *   7.85  parte apagada: contorno âmbar desenha 70%→100% + legenda "30% · 180 não compraram"
  *   7.90  70% assenta: pulso de luz, "LEITURA CONCLUÍDA"; composição viva até 10.65
  */
 (function () {
@@ -42,6 +45,7 @@
   // bordas direitas finais (coordenadas da tela) na linha do resultado (grupo centrado em 540)
   const ROW = { r420: 488, div: 540, r600: 754 };
   const ROWW = 162; // largura aproximada de 3 dígitos na escala final
+  const MISS_Y = 1416; // legenda âmbar da parte apagada do anel (abaixo da régua)
 
   const T = {
     eyebrow: -0.4,
@@ -68,6 +72,8 @@
     pct: 6.95,
     label: 7.45,
     settle: 7.9,
+    def: 0.35, // definição em linguagem simples sob o título
+    miss: 7.85, // "30% · 180 não compraram" (0,4 s depois de "de positivação")
   };
 
   const css = `
@@ -156,6 +162,19 @@
 [data-act="B"] .b-pctlab { left:0; width:${W}px; top:${RING_CY + 108}px; text-align:center; font-family:var(--font-text);
   font-weight:500; font-size:44px; color:var(--silver-2); letter-spacing:0.005em; }
 [data-act="B"] .b-glow { border-radius:50%; }
+[data-act="B"] .b-def { left:0; width:${W}px; top:574px; text-align:center; font-family:var(--font-text); font-weight:500;
+  font-size:38px; line-height:1.2; color:var(--silver-2); letter-spacing:0.002em; white-space:nowrap; }
+[data-act="B"] .b-def .w { display:inline-block; }
+[data-act="B"] .b-def .w.hi { color:#ffffff; font-weight:700; }
+[data-act="B"] .b-def .w.n { color:#c99bff; font-weight:800; text-shadow:0 0 18px rgba(180,108,255,0.6); }
+[data-act="B"] .b-miss { left:0; width:${W}px; top:${MISS_Y}px; display:flex; justify-content:center; align-items:center; gap:18px;
+  font-family:var(--font-text); font-weight:600; font-size:38px; color:#ffcf85; white-space:nowrap; }
+[data-act="B"] .b-miss .sw { width:46px; height:16px; border-radius:8px; background:#3a2f4c; border:2px solid var(--amber);
+  box-shadow:0 0 14px rgba(255,181,71,0.45); flex:none; }
+[data-act="B"] .b-miss .pc { font-family:var(--font-display); font-weight:800; font-size:44px; color:var(--amber);
+  text-shadow:0 0 18px rgba(255,181,71,0.45); font-variant-numeric:tabular-nums; }
+[data-act="B"] .b-miss .sep { color:rgba(255,181,71,0.6); }
+[data-act="B"] .b-miss b { color:var(--amber); font-weight:800; }
 [data-act="B"] .b-hud { left:0; width:${W}px; text-align:center; font-family:var(--font-mono); font-size:22px; letter-spacing:0.24em;
   color:rgba(220,194,255,0.62); white-space:nowrap; }
 [data-act="B"] .b-hud .d { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--neon);
@@ -182,11 +201,6 @@
     }
     return d;
   }
-  // dígitos HUD "rodando" (determinístico por quadro)
-  const rollDigits = (t, seed) => {
-    const k = Math.floor(t * 11);
-    return String(Math.floor(SAIB.fx.hash(k * 7 + seed) * 900) + 100);
-  };
 
   SAIB.act("B", {
     css,
@@ -231,6 +245,16 @@
       S.titleChars = split(S.titleTx).chars;
       world.append(S.title);
 
+      // definição em linguagem simples, logo abaixo do título
+      S.def = h("div", { class: "b-abs b-def" });
+      S.defWords = [["a"], ["%", "hi"], ["da"], ["sua"], ["carteira", "hi"], ["que"], ["comprou", "n"], ["de"], ["você"]].map(([wd, k], i, arr) => {
+        const w = h("span", { class: "w" + (k ? " " + k : ""), text: wd });
+        S.def.append(w);
+        if (i < arr.length - 1) S.def.append(document.createTextNode(" "));
+        return w;
+      });
+      world.append(S.def);
+
       // SVG: barra/anel, régua, arco, brilhos
       const svg = h("svg", { class: "b-svg", viewBox: `0 0 ${W} 1920` });
       const defs = h("defs", {}, [
@@ -260,6 +284,9 @@
       // régua fantasma da barra (o scan do motor já encontra o "esqueleto" da fração)
       S.ghostBar = h("line", { x1: CX - BAR_L / 2, y1: BAR_Y, x2: CX + BAR_L / 2, y2: BAR_Y, stroke: "rgba(220,194,255,0.34)", "stroke-width": "2", "stroke-dasharray": "3 11" });
       S.track = P({ stroke: "#3a2f4c", "stroke-width": "16" });
+      // contorno âmbar fino sobre a parte apagada (30%): "não comprou" vira alerta
+      S.missHalo = P({ stroke: "rgba(255,181,71,0.16)", "stroke-width": "24" });
+      S.missArc = P({ stroke: "#ffb547", "stroke-width": "2.5", "stroke-dasharray": "10 9" });
       S.trackHi = P({ stroke: "rgba(220,194,255,0.10)", "stroke-width": "2" });
       S.barHalo = P({ stroke: "rgba(180,108,255,0.30)", "stroke-width": "20" });
       S.barCore = P({ stroke: "url(#bBarG)", "stroke-width": "5" });
@@ -299,7 +326,7 @@
         el.textContent = String(v);
         return { el, v };
       });
-      svg.append(S.inner, S.innerHair, tg, ...S.tickLabels.map((x) => x.el), S.ghostBar, S.track, S.trackHi, S.barHalo, S.barCore,
+      svg.append(S.inner, S.innerHair, tg, ...S.tickLabels.map((x) => x.el), S.ghostBar, S.track, S.trackHi, S.missHalo, S.missArc, S.barHalo, S.barCore,
         S.arcH1, S.arcH2, S.arc, S.pulse, S.shim, S.headA, S.headB, S.dot1, S.dot2, S.tipGlow, S.tip);
       S.svg = svg;
 
@@ -313,11 +340,8 @@
         const bg = h("div", { class: `b-abs b-chip ${cls}`, style: { top: top + "px" } });
         const sheen = h("div", { class: "sheen" });
         bg.append(sheen);
-        const tagEl = h("div", { class: "b-abs b-tag", style: { top: top + 18 + "px" } }, [
-          h("span", { text: tag + " · Σ " }),
-        ]);
-        const tagV = h("span", { class: "v", text: "000" });
-        tagEl.append(tagV);
+        // só o papel do termo (sem números decorativos: o valor real aparece grande no chip)
+        const tagEl = h("div", { class: "b-abs b-tag", style: { top: top + 18 + "px" } }, [h("span", { text: tag })]);
         const edge = h("div", { class: "b-abs b-edge", style: { top: top + "px" } });
         const box = h("div", { class: "b-abs b-box", style: { top: top + "px" } });
         const text = h("div", { class: "b-text" });
@@ -342,7 +366,7 @@
         const lab = h("div", { class: "b-lab", html: labHtml });
         nbox.append(glow, num, lab);
         world.append(bg, tagEl, box, xbox, nbox, edge);
-        return { top, bg, sheen, tagEl, tagV, edge, box, xbox, text, words, nbox, glow, num, numSpan: num.firstChild, lab, last: "", tagLast: "", seed };
+        return { top, bg, sheen, tagEl, edge, box, xbox, text, words, nbox, glow, num, numSpan: num.firstChild, lab, last: "", tagLast: "", seed };
       };
       S.num = mkChip(NUM_TOP, "num", "NUMERADOR",
         [[["clientes"], ["que"], ["compraram", "k-neon"]], [["no"], ["período"]]],
@@ -367,9 +391,18 @@
       S.pctLab = h("div", { class: "b-abs b-pctlab", text: "de positivação" });
       world.append(S.pct, S.pctLab);
 
+      // legenda da parte apagada: 600 − 420 = 180 (conecta com a lista do ato D)
+      S.miss = h("div", { class: "b-abs b-miss" }, [
+        h("span", { class: "sw" }),
+        h("span", { class: "pc", text: "30%" }),
+        h("span", { class: "sep", text: "·" }),
+        h("span", { html: "<b>180</b> não compraram" }),
+      ]);
+      world.append(S.miss);
+
       // HUD inferior
       S.hud1 = h("div", { class: "b-abs b-hud", style: { top: "1252px", color: "rgba(220,194,255,0.5)" }, html: "Σ COMPRARAM ÷ Σ ATIVOS" });
-      S.hud2 = h("div", { class: "b-abs b-hud", style: { top: "1446px" }, html: '<span class="d"></span>LEITURA CONCLUÍDA' });
+      S.hud2 = h("div", { class: "b-abs b-hud", style: { top: "1500px" }, html: '<span class="d"></span>LEITURA CONCLUÍDA' });
       world.append(S.hud1, S.hud2);
 
       // carimbo EXEMPLO (no canto superior direito, com respiro do eyebrow, do título e do cromo)
@@ -450,6 +483,18 @@
         });
       }
 
+      // ---------- definição (linguagem simples): entra após o título, sai junto no colapso
+      {
+        const counter = -0.8 * clamp(t - 1.6, 0, C - 1.6) * (1 - prog(t, C, C + 0.3));
+        set(S.def, { y: counter });
+        S.defWords.forEach((w, i) => {
+          const a = T.def + i * 0.045;
+          const st = enterState(t, a, { y: 34, blur: 10, dur: 0.75 });
+          const ex = exitState(t, C - 0.2 + i * 0.012, { y: -40, blur: 12, dur: 0.35 });
+          set(w, { y: st.y + ex.y, opacity: st.opacity * ex.opacity, blur: st.blur + ex.blur });
+        });
+      }
+
       // ---------- "=" do título: entra como última letra; no colapso desce para baixo da conta
       {
         const a = T.title + S.titleChars.length * 0.04 + 0.04;
@@ -522,18 +567,11 @@
           ? lerp(-260, CHIP.w + 60, tw(t, inAt + 0.35, 1.1, ease.inOutCubic))
           : lerp(-260, CHIP.w + 60, tw(t, sheen2, 0.9, ease.inOutCubic));
         set(c.sheen, { x: sx });
-        // tag HUD (decorativa): dígitos rodam até o feixe passar, então travam no valor
+        // tag HUD: só o nome do termo
         {
           const tst = enterState(t, inAt + 0.25, { y: 10, blur: 6, dur: 0.6 });
           const tex = exitState(t, C - 0.1, { y: -10, blur: 6, dur: 0.25 });
           set(c.tagEl, { y: tst.y + tex.y + par, opacity: tst.opacity * tex.opacity, blur: tst.blur + tex.blur });
-          const locked = cut > 400;
-          const s = locked ? String(target) : rollDigits(t, c.seed);
-          if (c.tagLast !== s) {
-            c.tagV.textContent = s;
-            c.tagLast = s;
-          }
-          c.tagV.style.color = locked ? "rgba(220,194,255,0.75)" : "";
         }
         // palavras
         c.words.forEach((w, i) => {
@@ -565,11 +603,9 @@
         c.nbox.style.display = numOn ? "block" : "none";
         if (!numOn) return;
         c.nbox.style.clipPath = cut < CHIP.w - 0.5 ? `inset(-60px ${(CHIP.w - cut).toFixed(1)}px -60px -60px)` : "none";
-        // contagem (com 2–3 quadros de dígitos embaralhados no início)
+        // contagem limpa 0 -> alvo (sem dígitos aleatórios)
         const cp = ease.outQuart(prog(t, countAt, countAt + T.countDur));
-        let s;
-        if (t >= countAt && t < countAt + 0.07) s = String(Math.floor(hash(Math.floor(t * 60) * 3 + c.seed) * (target - 100)) + 100);
-        else s = String(Math.round(target * cp));
+        const s = String(Math.round(target * cp));
         if (c.last !== s) {
           c.numSpan.textContent = s;
           c.last = s;
@@ -750,6 +786,25 @@
           S.pulse.style.opacity = (0.75 * Math.pow(1 - pu, 1.6)).toFixed(3);
           S.pulse.setAttribute("stroke-width", lerp(6, 1, pu).toFixed(2));
         } else S.pulse.style.display = "none";
+      }
+
+      // ---------- parte apagada (30%): contorno âmbar desenha 70% -> 100% e a legenda entra
+      {
+        const md = ease.inOutCubic(prog(t, T.miss - 0.1, T.miss + 0.55));
+        if (bendP > 0.999 && md > 0.001) {
+          const a0 = -0.3 * g.L;
+          const d = pathD(g, a0 + 6, a0 + 6 + (0.3 * g.L - 12) * md, Math.max(4, Math.ceil(44 * md)));
+          S.missArc.setAttribute("d", d);
+          S.missHalo.setAttribute("d", d);
+          const br = 0.8 + 0.2 * Math.sin(t * 2.4 + 2);
+          S.missArc.style.opacity = (0.9 * prog(t, T.miss - 0.1, T.miss + 0.1)).toFixed(3);
+          S.missHalo.style.opacity = (br * prog(t, T.miss - 0.1, T.miss + 0.3)).toFixed(3);
+          S.missArc.setAttribute("stroke-dashoffset", (-t * 14).toFixed(1));
+        } else {
+          S.missArc.setAttribute("d", "M0 0");
+          S.missHalo.setAttribute("d", "M0 0");
+        }
+        inOut(S.miss, t, T.miss, null, { y: 30, blur: 10, dur: 0.7 });
       }
 
       // ---------- 70%
