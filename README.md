@@ -2,7 +2,13 @@
 
 Reels da **SAIB Web Tecnologia** feitos em HTML/JS e renderizados quadro a quadro no Chromium, com saída em MP4 pelo ffmpeg.
 
-Vídeo atual: **Raio-X do distribuidor #1 · Positivação**, em 1080 × 1920, 60 fps, 41,6 s e sem áudio, para colocar uma trilha em alta direto no Instagram.
+Vídeo atual: **Raio-X do distribuidor #1 · Positivação**, em 1080 × 1920 e 41,6 s, com trilha original e efeitos sonoros sintetizados por código (`audio/sound.py`).
+
+Arquivos em `videos/`:
+- `raio-x-01-positivacao.mp4`: versão principal para postar (30 fps, música + efeitos, −14 LUFS)
+- `raio-x-01-positivacao-60fps.mp4`: a mesma, a 60 fps
+- `raio-x-01-positivacao-so-efeitos.mp4`: só os efeitos, para usar com uma música em alta do Instagram
+- `raio-x-01-positivacao-capa.png`: capa do Reels
 
 ## Estrutura
 
@@ -22,6 +28,10 @@ Requisitos: Node 18+, ffmpeg, Python 3 com Pillow e Playwright (`npm i`).
 ```bash
 # vídeo final (60 fps, motion blur, granulação)
 node render/render.mjs --mb 4 --out out/saib-positivacao-reels.mp4
+
+# trilha (gera audio/out/mix.wav e sfx.wav) e masterização em -14 LUFS
+python3 audio/sound.py
+ffmpeg -i audio/out/mix.wav -af loudnorm=I=-14:TP=-1:LRA=11 audio/out/mix-master.wav
 
 # prévia rápida
 node render/render.mjs --fps 30 --jpeg --out out/preview.mp4
